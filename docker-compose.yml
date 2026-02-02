@@ -1,0 +1,40 @@
+services:
+  battery-db:
+    image: postgres:16
+    container_name: battery-db
+    environment:
+      POSTGRES_DB: battery
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - battery_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d battery"]
+      interval: 5s
+      timeout: 5s
+      retries: 25
+
+  battery-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: battery-api
+    environment:
+      # ✅ PONEMOS TODO: si tu código usa DATABASE_URL o DB_HOST, queda cubierto
+      DB_HOST: battery-db
+      DB_PORT: "5432"
+      DB_NAME: battery
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@battery-db:5432/battery
+    ports:
+      - "8000:8000"
+    depends_on:
+      battery-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  battery_db_data:

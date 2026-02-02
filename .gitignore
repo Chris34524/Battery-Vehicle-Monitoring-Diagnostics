@@ -1,14 +1,10 @@
 # Python
 __pycache__/
 *.pyc
-
-# Entornos
 .venv/
-env/
-venv/
+.env
 
-# Editor / sistema
-.idea/
-.vscode/
+# OS / IDE
 .DS_Store
-Thumbs.db
+.vscode/
+.idea/
